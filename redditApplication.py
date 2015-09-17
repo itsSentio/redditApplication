@@ -18,9 +18,14 @@ loginNotFinished = True
 redditObject = praw.Reddit(user_agent="reddit Standalone Application")
 
 def sendLoginRequest():
-	global loginNotFinished, userName, userPass
+	global loginNotFinished, userName, userPass, userLabel, buttonFrame
 	loginNotFinished = False
 	redditObject.login(userName.get(), userPass.get())
+
+	# Makes changes to login label.
+	userLabel.destroy()
+	userLabel = tk.Label(buttonFrame, text = "Currently logged: " + userName.get(), font=("Arial", 10), anchor=tk.W)
+	userLabel.pack(side = tk.BOTTOM)
 
 def getLogin():
 	global redditObject, root, loginNotFinished, userName, userPass
@@ -29,7 +34,7 @@ def getLogin():
 		tk.Label(loginWindow, text="Username").grid(row=0)
 		tk.Label(loginWindow, text="Password").grid(row=1)
 		userName = tk.Entry(loginWindow)
-		userPass = tk.Entry(loginWindow)
+		userPass = tk.Entry(loginWindow, show="*")
 		userName.grid(row=0, column=1)
 		userPass.grid(row=1, column=1)
 		loginFinished = tk.Button(loginWindow, text="Login", command = sendLoginRequest).grid(row=2)
@@ -49,9 +54,11 @@ def unsubscribeSubreddit():
 def pullRedditFeed():
 	global root, submissionListbox
 	subreddit = redditObject.get_subreddit('python')
-	for submission in subreddit.get_hot(limit=5):
+	for submission in subreddit.get_hot(limit=10):
 		submissionListbox.insert(tk.END, submission.title)
 
+def getAbout():
+	print ("Insert Text")
 		
 root = tk.Tk()
 root.title('reddit Standalone')
@@ -65,21 +72,17 @@ submissionListbox.pack()
 buttonFrame = tk.Frame(root, width = 200)
 buttonFrame.pack()
 
-try:
-	userLabel = tk.Label(buttonFrame, text = "Currently logged: " + userName, font=("Arial", 10), anchor=tk.W)
-	userLabel.pack(side = tk.BOTTOM)
-except NameError:
-	userLabel = tk.Label(buttonFrame, text = "Currently logged: None", font=("Arial", 10), anchor=tk.W)
-	userLabel.pack(side = tk.BOTTOM)
-else:
-	userLabel = tk.Label(buttonFrame, text = "Currently logged: " + userName, font=("Arial", 10), anchor=tk.W)
-	userLabel.pack(side = tk.BOTTOM)
+userLabel = tk.Label(buttonFrame, text = "Currently logged in: None", font=("Arial", 10), anchor=tk.W)
+userLabel.pack(side = tk.BOTTOM)
 
 loginButton = tk.Button(buttonFrame, text="Login", command = getLogin)
 loginButton.pack(side = tk.LEFT)
 
 getFeedButton = tk.Button(buttonFrame, text="Check Feed", command = pullRedditFeed)
 getFeedButton.pack(side = tk.LEFT)
+
+aboutButton = tk.Button(buttonFrame, text="About", command = getAbout)
+aboutButton.pack(side = tk.LEFT)
 
 root.mainloop()
 
