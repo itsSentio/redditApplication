@@ -1,6 +1,7 @@
 from urllib import *
 import praw
 from pprint import pprint
+import json
 
 # Handles import error in Tkinter.
 try:
@@ -46,17 +47,41 @@ def unsubscribeSubreddit():
 	redditObject.get_subreddit(userSubredditInput).unsubscribe()
 
 def pullRedditFeed():
-	redditFeed = redditObject.get_subreddit('python').get_hot(limit=5)
-	pprint ([str(x) for x in redditFeed])
+	global root, submissionListbox
+	subreddit = redditObject.get_subreddit('python')
+	for submission in subreddit.get_hot(limit=5):
+		submissionListbox.insert(tk.END, submission.title)
+
+		
+		
 
 root = tk.Tk()
+root.title('reddit Standalone')
 
-loginButton = tk.Button(root, text="Login", command = getLogin)
-loginButton.pack()
+headerLabel = tk.Label(root, text = "Standalone Reddit Application", font=("Arial", 10), anchor=tk.W)
+headerLabel.pack()
 
-getFeedButton = tk.Button(root, text="Check Feed", command = pullRedditFeed)
-getFeedButton.pack()
+submissionListbox = tk.Listbox(root, width=200)
+submissionListbox.pack()
 
+buttonFrame = tk.Frame(root, width = 200)
+buttonFrame.pack()
+
+try:
+	userLabel = tk.Label(buttonFrame, text = "Currently logged: " + userName, font=("Arial", 10), anchor=tk.W)
+	userLabel.pack(side = tk.BOTTOM)
+except NameError:
+	userLabel = tk.Label(buttonFrame, text = "Currently logged: None", font=("Arial", 10), anchor=tk.W)
+	userLabel.pack(side = tk.BOTTOM)
+else:
+	userLabel = tk.Label(buttonFrame, text = "Currently logged: " + userName, font=("Arial", 10), anchor=tk.W)
+	userLabel.pack(side = tk.BOTTOM)
+
+loginButton = tk.Button(buttonFrame, text="Login", command = getLogin)
+loginButton.pack(side = tk.LEFT)
+
+getFeedButton = tk.Button(buttonFrame, text="Check Feed", command = pullRedditFeed)
+getFeedButton.pack(side = tk.LEFT)
 
 root.mainloop()
 
