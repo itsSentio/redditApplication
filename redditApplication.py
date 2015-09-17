@@ -53,8 +53,6 @@ def pullRedditFeed():
 		submissionListbox.insert(tk.END, submission.title)
 
 		
-		
-
 root = tk.Tk()
 root.title('reddit Standalone')
 
