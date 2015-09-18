@@ -20,7 +20,7 @@ redditObject = praw.Reddit(user_agent="reddit Standalone Application")
 def sendLoginRequest():
 	global loginNotFinished, userName, userPass, userLabel, buttonFrame
 	loginNotFinished = False
-	redditObject.login(userName.get(), userPass.get())
+	redditObject.login(userName.get(), userPass.get(), disable_warning=True)
 
 	# Makes changes to login label.
 	userLabel.destroy()
@@ -55,13 +55,23 @@ def pullFeedID():
 
 def openRedditWindow(self):
 	global submissionListbox, submissionList
-	submissionWindow = tk.Toplevel(root)
+	submissionWindow = tk.Toplevel(root, width=580, height=680)
 
 	# Pulls user input.
 	userSelect = submissionListbox.curselection()
 	userSelectFinal = submissionList[userSelect[0]]
+	submissionData = redditObject.get_submission(submission_id = userSelectFinal)
+	pprint (vars(submissionData))
 
-	# ID TO SUBMISSION TO PULL TEXT
+	submissionWindowFrame = tk.Frame(submissionWindow)
+	submissionWindowFrame.pack()
+
+	submissionWindowTitle = tk.Label(submissionWindowFrame, text=submissionData.title, font=("Arial", 14), anchor=tk.W, justify=tk.LEFT)
+	submissionWindowTitle.pack()
+
+	submissionWindowSelfText = tk.Label(submissionWindowFrame, text=submissionData.selftext, wraplength=1000, font=("Arial", 10), anchor=tk.W, justify=tk.LEFT)
+	submissionWindowSelfText.pack()
+
 
 
 def getAbout():
@@ -93,7 +103,3 @@ aboutButton = tk.Button(buttonFrame, text="About", command = getAbout)
 aboutButton.pack(side = tk.LEFT)
 
 root.mainloop()
-
-
-
-
