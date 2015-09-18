@@ -40,26 +40,33 @@ def getLogin():
 		loginFinished = tk.Button(loginWindow, text="Login", command = sendLoginRequest).grid(row=2)
 		loginFinished.pack()
 
-		
-def subscribeSubreddit():
-	global redditObject
-	userSubredditInput = input("Enter Subreddit Name: ")
-	redditObject.get_subreddit(userSubredditInput).subscribe()
-
-def unsubscribeSubreddit():
-	global redditObject
-	userSubredditInput = input("Enter Subreddit Name: ")
-	redditObject.get_subreddit(userSubredditInput).unsubscribe()
-
 def pullRedditFeed():
-	global root, submissionListbox
+	global root, submissionListbox, submission, subreddit
 	subreddit = redditObject.get_subreddit('python')
 	for submission in subreddit.get_hot(limit=10):
 		submissionListbox.insert(tk.END, submission.title)
+	pullFeedID()
+
+def pullFeedID():
+	global subreddit, submissionList
+	submissionList = [0]
+	for submissionId in subreddit.get_hot(limit=10):
+		submissionList.append(submissionId.id)
+
+def openRedditWindow(self):
+	global submissionListbox, submissionList
+	submissionWindow = tk.Toplevel(root)
+
+	# Pulls user input.
+	userSelect = submissionListbox.curselection()
+	userSelectFinal = submissionList[userSelect[0]]
+
+	# ID TO SUBMISSION TO PULL TEXT
+
 
 def getAbout():
-	print ("Insert Text")
-		
+	print('Test')
+
 root = tk.Tk()
 root.title('reddit Standalone')
 
@@ -67,6 +74,7 @@ headerLabel = tk.Label(root, text = "Standalone Reddit Application", font=("Aria
 headerLabel.pack()
 
 submissionListbox = tk.Listbox(root, width=200)
+submissionListbox.bind("<Double-Button-1>", openRedditWindow)
 submissionListbox.pack()
 
 buttonFrame = tk.Frame(root, width = 200)
